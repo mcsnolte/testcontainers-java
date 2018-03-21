@@ -46,3 +46,10 @@ node_modules/
 
 .gradle/
 build/
+
+# Eclipse IDE files
+**/.project
+**/.classpath
+**/.settings
+**/bin/
+**/out/
