@@ -3,8 +3,6 @@ package org.testcontainers.jdbc;
 import static java.util.Arrays.asList;
 import static org.rnorth.visibleassertions.VisibleAssertions.assertEquals;
 
-import java.sql.SQLException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
