@@ -32,27 +32,29 @@ public class JDBCDriverTest {
     public boolean performTestForCharacterSet;
     @Parameter(3)
     public boolean performTestForCustomIniFile;
+    @Parameter(4)
+    public boolean performTestForJDBCParams;
 
     @Parameterized.Parameters(name = "{index} - {0}")
     public static Iterable<Object[]> data() {
         return asList(
             new Object[][]{
-                {"jdbc:tc:mysql:5.5.43://hostname/databasename", false, false, false},
-                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false},
-                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false},
-                {"jdbc:tc:mysql://hostname/databasename?TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false},
-                {"jdbc:tc:mysql://hostname/databasename?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false},
-                {"jdbc:tc:mysql://hostname/databasename?useUnicode=yes&characterEncoding=utf8", false, true, false},
-                {"jdbc:tc:mysql://hostname/databasename", false, false, false},
-                {"jdbc:tc:mysql://hostname/databasename?useSSL=false", false, false, false},
-                {"jdbc:tc:postgresql://hostname/databasename", false, false, false},
-                {"jdbc:tc:mysql:5.6://hostname/databasename?TC_MY_CNF=somepath/mysql_conf_override", false, false, true},
-                {"jdbc:tc:mariadb:10.1.16://hostname/databasename", false, false, false},
-                {"jdbc:tc:mariadb://hostname/databasename", false, false, false},
-                {"jdbc:tc:mariadb://hostname/databasename?useUnicode=yes&characterEncoding=utf8", false, true, false},
-                {"jdbc:tc:mariadb://hostname/databasename?TC_INITSCRIPT=somepath/init_mariadb.sql", true, false, false},
-                {"jdbc:tc:mariadb://hostname/databasename?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false},
-                {"jdbc:tc:mariadb:10.1.16://hostname/databasename?TC_MY_CNF=somepath/mariadb_conf_override", false, false, true}
+                {"jdbc:tc:mysql:5.5.43://hostname/databasename", false, false, false, false},
+                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false, true},
+                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, true},
+                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false, true},
+                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, true},
+                {"jdbc:tc:mysql://hostname/databasename?useUnicode=yes&characterEncoding=utf8", false, true, false, false},
+                {"jdbc:tc:mysql://hostname/databasename", false, false, false, false},
+                {"jdbc:tc:mysql://hostname/databasename?useSSL=false", false, false, false, false},
+                {"jdbc:tc:postgresql://hostname/databasename", false, false, false, false},
+                {"jdbc:tc:mysql:5.6://hostname/databasename?TC_MY_CNF=somepath/mysql_conf_override", false, false, true, false},
+                {"jdbc:tc:mariadb:10.1.16://hostname/databasename", false, false, false, false},
+                {"jdbc:tc:mariadb://hostname/databasename", false, false, false, false},
+                {"jdbc:tc:mariadb://hostname/databasename?useUnicode=yes&characterEncoding=utf8", false, true, false, false},
+                {"jdbc:tc:mariadb://hostname/databasename?TC_INITSCRIPT=somepath/init_mariadb.sql", true, false, false, false},
+                {"jdbc:tc:mariadb://hostname/databasename?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, false},
+                {"jdbc:tc:mariadb:10.1.16://hostname/databasename?TC_MY_CNF=somepath/mariadb_conf_override", false, false, true, false}
             });
     }
 
@@ -77,6 +79,10 @@ public class JDBCDriverTest {
 
         if (performTestForScriptedSchema) {
             performTestForScriptedSchema(jdbcUrl);
+        }
+
+        if (performTestForJDBCParams) {
+            performTestForJDBCParamUsage(jdbcUrl);
         }
 
         if (performTestForCharacterSet) {
@@ -112,8 +118,12 @@ public class JDBCDriverTest {
                 assertEquals("A basic SELECT query succeeds where the schema has been applied from a script", "hello world", resultSetString);
                 return true;
             });
+        }
+    }
 
-            result = new QueryRunner(dataSource).query("select CURRENT_USER()", rs -> {
+    private void performTestForJDBCParamUsage(String jdbcUrl) throws SQLException {
+        try (HikariDataSource dataSource = getDataSource(jdbcUrl, 1)) {
+            boolean result = new QueryRunner(dataSource).query("select CURRENT_USER()", rs -> {
                 rs.next();
                 String resultUser = rs.getString(1);
                 assertEquals("User from query param is created.", "someuser@%", resultUser);
