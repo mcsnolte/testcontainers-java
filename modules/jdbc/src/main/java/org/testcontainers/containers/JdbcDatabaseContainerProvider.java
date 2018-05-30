@@ -2,9 +2,12 @@ package org.testcontainers.containers;
 
 import org.testcontainers.jdbc.ConnectionUrl;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Base class for classes that can provide a JDBC container.
  */
+@Slf4j
 public abstract class JdbcDatabaseContainerProvider {
 
     /**
@@ -27,6 +30,13 @@ public abstract class JdbcDatabaseContainerProvider {
      * @return Instance of {@link JdbcDatabaseContainer}
      */
     public JdbcDatabaseContainer newInstance(ConnectionUrl url) {
-        return newInstance(url.getImageTag());
+        if (url.getImageTag() == null) {
+            log.warn("No explicit version tag was provided in JDBC URL and this class ({}) does not " +
+                "override newInstance() to set a default tag. `latest` will be used but results may " +
+                "be unreliable!", this.getClass().getCanonicalName());
+            return newInstance("latest");
+        } else {
+            return newInstance(url.getImageTag());
+        }
     }
 }

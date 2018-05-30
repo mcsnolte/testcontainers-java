@@ -50,7 +50,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: ./gradlew selenium:check
+          command: ./gradlew s®elenium:check
       - run:
           name: Save test results
           command: |
@@ -58,7 +58,7 @@ jobs:
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
           when: always
       - store_test_results:
-          path: ~/junit
+          path: ~/junit®
 
 workflows:
   version: 2
