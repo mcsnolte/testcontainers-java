@@ -40,10 +40,10 @@ public class JDBCDriverTest {
         return asList(
             new Object[][]{
                 {"jdbc:tc:mysql://hostname/databasename", false, false, false, false},
-                {"jdbc:tc:mysql:5.5.43://hostname/databasename?TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false, true},
-                {"jdbc:tc:mysql:5.5.43://hostname/databasename?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, true},
+                {"jdbc:tc:mysql:5.5.43://hostname/databasename?user=someuser&TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false, true},
+                {"jdbc:tc:mysql:5.5.43://hostname/databasename?user=someuser&TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, true},
                 {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITSCRIPT=somepath/init_mysql.sql", true, false, false, true},
-                                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, true},
+                {"jdbc:tc:mysql://hostname/databasename?user=someuser&password=somepwd&TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", true, false, false, true},
                 {"jdbc:tc:mysql:5.5.43://hostname/databasename?useUnicode=yes&characterEncoding=utf8", false, true, false, false},
                 {"jdbc:tc:mysql:5.5.43://hostname/databasename", false, false, false, false},
                 {"jdbc:tc:mysql:5.5.43://hostname/databasename?useSSL=false", false, false, false, false},

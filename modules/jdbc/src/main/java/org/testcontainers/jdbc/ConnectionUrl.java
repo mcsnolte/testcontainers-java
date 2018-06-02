@@ -23,7 +23,7 @@ public class ConnectionUrl {
 
     private String databaseType;
 
-    private String imageTag = "latest";
+    private Optional<String> imageTag;
 
     /**
      * This is a part of the connection string that may specify host:port/databasename.
@@ -85,7 +85,7 @@ public class ConnectionUrl {
         }
         databaseType = urlMatcher.group(1);
 
-        imageTag = Optional.ofNullable(urlMatcher.group(3)).orElse("latest");
+        imageTag = Optional.ofNullable(urlMatcher.group(3));
 
         //String like hostname:port/database name, which may vary based on target database.
         //Clients can further parse it as needed.

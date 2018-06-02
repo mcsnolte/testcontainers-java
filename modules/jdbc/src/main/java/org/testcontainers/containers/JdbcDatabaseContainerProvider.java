@@ -25,18 +25,28 @@ public abstract class JdbcDatabaseContainerProvider {
     public abstract JdbcDatabaseContainer newInstance(String tag);
 
     /**
+     * Instantiate a new {@link JdbcDatabaseContainer} without any specified image tag. Subclasses <i>should</i>
+     * override this method if possible, to provide a default tag that is more stable than <code>latest</code>`.
+     *
+     * @return Instance of {@link JdbcDatabaseContainer}
+     */
+    public JdbcDatabaseContainer newInstance() {
+        log.warn("No explicit version tag was provided in JDBC URL and this class ({}) does not " +
+            "override newInstance() to set a default tag. `latest` will be used but results may " +
+            "be unreliable!", this.getClass().getCanonicalName());
+        return this.newInstance("latest");
+    }
+
+    /**
      * Instantiate a new {@link JdbcDatabaseContainer} using information provided with {@link ConnectionUrl}.
      * @param url {@link ConnectionUrl}
      * @return Instance of {@link JdbcDatabaseContainer}
      */
     public JdbcDatabaseContainer newInstance(ConnectionUrl url) {
-        if (url.getImageTag() == null) {
-            log.warn("No explicit version tag was provided in JDBC URL and this class ({}) does not " +
-                "override newInstance() to set a default tag. `latest` will be used but results may " +
-                "be unreliable!", this.getClass().getCanonicalName());
-            return newInstance("latest");
+        if (url.getImageTag().isPresent()) {
+            return newInstance(url.getImageTag().get());
         } else {
-            return newInstance(url.getImageTag());
+            return newInstance();
         }
     }
 }

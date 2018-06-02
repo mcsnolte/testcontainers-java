@@ -1,8 +1,8 @@
 package org.testcontainers.containers;
 
-import java.util.Objects;
-
 import org.testcontainers.jdbc.ConnectionUrl;
+
+import java.util.Objects;
 
 /**
  * Factory for MySQL containers.
@@ -26,7 +26,11 @@ public class MySQLContainerProvider extends JdbcDatabaseContainerProvider {
 
     @Override
     public JdbcDatabaseContainer newInstance(String tag) {
-        return new MySQLContainer(MySQLContainer.IMAGE + ":" + tag);
+        if (tag != null) {
+            return new MySQLContainer(MySQLContainer.IMAGE + ":" + tag);
+        } else {
+            return newInstance();
+        }
     }
 
     @Override
@@ -37,7 +41,14 @@ public class MySQLContainerProvider extends JdbcDatabaseContainerProvider {
         final String user = connectionUrl.getQueryParameters().getOrDefault(USER_PARAM, "test");
         final String password = connectionUrl.getQueryParameters().getOrDefault(PASSWORD_PARAM, "test");
 
-        return newInstance(connectionUrl.getImageTag())
+        final JdbcDatabaseContainer instance;
+        if (connectionUrl.getImageTag().isPresent()) {
+            instance = newInstance(connectionUrl.getImageTag().get());
+        } else {
+            instance = newInstance();
+        }
+
+        return instance
             .withDatabaseName(databaseName)
             .withUsername(user)
             .withPassword(password);

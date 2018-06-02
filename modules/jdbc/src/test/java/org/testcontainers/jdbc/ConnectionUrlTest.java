@@ -1,10 +1,10 @@
 package org.testcontainers.jdbc;
 
-import static org.rnorth.visibleassertions.VisibleAssertions.*;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.rnorth.visibleassertions.VisibleAssertions.*;
 
 public class ConnectionUrlTest {
 
@@ -18,7 +18,7 @@ public class ConnectionUrlTest {
         ConnectionUrl url = ConnectionUrl.newInstance(urlString);
 
         assertEquals("Database Type value is as expected", "mysql", url.getDatabaseType());
-        assertEquals("Database Image tag value is as expected", "5.6.23", url.getImageTag());
+        assertEquals("Database Image tag value is as expected", "5.6.23", url.getImageTag().get());
         assertEquals("Database Host String is as expected", "somehostname:3306/databasename", url.getDbHostString());
         assertEquals("Query String value is as expected", "?a=b&c=d", url.getQueryString().get());
         assertEquals("Database Host value is as expected", "somehostname", url.getDatabaseHost().get());
@@ -36,7 +36,7 @@ public class ConnectionUrlTest {
         ConnectionUrl url = ConnectionUrl.newInstance(urlString);
 
         assertEquals("Database Type value is as expected", "mysql", url.getDatabaseType());
-        assertEquals("Database Image tag value is as expected", "latest", url.getImageTag());
+        assertFalse("Database Image tag value is as expected", url.getImageTag().isPresent());
         assertEquals("Database Host String is as expected", "somehostname/databasename", url.getDbHostString());
         assertEquals("Query String value is as expected", "?", url.getQueryString().get());
         assertEquals("Database Host value is as expected", "somehostname", url.getDatabaseHost().get());
